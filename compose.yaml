@@ -1,0 +1,13 @@
+﻿services:
+  movies.webservice:
+    image: movies.webservice
+    build:
+      context: .
+      dockerfile: Movies.WebService/Dockerfile
+
+  movies.webservice-1:
+    image: movies.webservice-1
+    build:
+      context: .
+      dockerfile: src/Movies.WebService/Dockerfile
+
