@@ -7,6 +7,7 @@
     <File Path="Directory.Packages.props" />
     <File Path=".editorconfig" />
     <File Path="global.json" />
+    <File Path=".github\workflows\build-and-test.yml" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src\Movies.Application.Abstractions\Movies.Application.Abstractions.csproj" Type="Classic C#" />
