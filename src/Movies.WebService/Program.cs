@@ -2,7 +2,7 @@ using Scalar.AspNetCore;
 
 namespace Movies.WebService;
 
-public static class Program
+public class Program
 {
     public static async Task Main(string[] args)
     {
