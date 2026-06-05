@@ -1,5 +1,7 @@
 using Movies.WebService.Middleware;
+
 using Scalar.AspNetCore;
+
 using Serilog;
 
 namespace Movies.WebService;
@@ -72,6 +74,12 @@ public class Program
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching",
         };
+
+        app.MapGet("/test-exception", () =>
+            {
+                throw new InvalidOperationException("This is a test exception to verify exception handling middleware.");
+            })
+            .WithName("TestException");
 
         app.MapGet("/weatherforecast", () =>
             {
