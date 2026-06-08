@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Docker Compose configuration** - Complete multi-container setup with PostgreSQL:
+  - `compose.yaml` with web service and PostgreSQL 17 Alpine
+  - Health checks for database readiness before application startup
+  - Environment variables for database configuration
+
+### Changed
+- **Dockerfile** - Fixed build paths to match actual project structure:
+  - Updated COPY paths from `src/Movies.WebService/` to `src/Applications/Movies.WebService/`
+  - Added copying of `Directory.Build.props` and `Directory.Packages.props` before restore
+  - Added explicit COPY steps for domain and persistence layer dependencies
+
+### Fixed
+- **Docker build** - Corrected path references to resolve NuGet restore failures
+
 ---
 
 ## [0.5.0] - Entity Framework Core with PostgreSQL
