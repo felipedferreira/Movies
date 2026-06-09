@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-
 using Movies.Domain;
 
 namespace Movies.Persistance.Postgres;
