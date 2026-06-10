@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+
 using Movies.Persistance.Postgres;
+
 using Scalar.AspNetCore;
+
 using Serilog;
 
 namespace Movies.WebService;
@@ -43,6 +46,23 @@ public class Program
         builder.Services.AddProblemDetails();
 
         var app = builder.Build();
+
+        // Verify the database is reachable before the application starts serving requests.
+        // MoviesDbContext is registered as a scoped service, so resolve it from a temporary
+        // DI scope rather than the root provider, and call CanConnectAsync to test the connection.
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<MoviesDbContext>();
+
+            if (await dbContext.Database.CanConnectAsync())
+            {
+                app.Logger.LogInformation("Successfully connected to the database.");
+            }
+            else
+            {
+                app.Logger.LogError("Unable to connect to the database.");
+            }
+        }
 
         // Handle unhandled exceptions and convert them to Problem Details (RFC 7807)
         app.UseMiddleware<ExceptionHandlingMiddleware>();
