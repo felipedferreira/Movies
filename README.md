@@ -4,6 +4,17 @@
 
 A clean architecture .NET solution for managing movies, crew members, and their roles — inspired by IMDB. Built with a focus on separation of concerns, testability, and maintainability.
 
+## 📁 Repository Layout
+
+```
+Movies/
+├── backend/      # .NET solution (Web API, application core, persistence, tests)
+├── frontend/     # Standalone SPA (planned) consuming the backend's OpenAPI spec
+└── compose.yaml  # Orchestrates PostgreSQL and the web service
+```
+
+All `dotnet` commands below are run from the `backend/` folder unless noted otherwise.
+
 ## 🗄️ Database
 
 This project uses **PostgreSQL** via **Entity Framework Core 10**.
@@ -39,9 +50,11 @@ For local development outside of Docker, you can use environment variables or co
 
 ### Migrations
 
-Run from the solution root, specifying the persistence project and the WebService as the startup project:
+Run from the `backend/` folder, specifying the persistence project and the WebService as the startup project:
 
 ```bash
+cd backend
+
 # Add a new migration
 dotnet ef migrations add <MigrationName> \
   --project src/Adapters/Movies.Persistance.Postgres \
@@ -61,12 +74,14 @@ dotnet ef database update \
 
 - **[Architecture Guide](README.md)** (this file) - Project structure and design patterns
 - **[Changelog](CHANGELOG.md)** - Version history and release notes
-- **[Libraries](src/Libraries/Movies.WebService.Contracts/README.md)** - NuGet package documentation
+- **[Libraries](backend/src/Libraries/Movies.WebService.Contracts/README.md)** - NuGet package documentation
   - Movies.WebService.Contracts - API contracts and DTOs
 
 ## 🚀 Quick Start
 
 ```bash
+cd backend
+
 # Build the solution
 dotnet build
 
@@ -228,12 +243,14 @@ The architecture enforces these dependency directions:
 
 ### Build the entire solution:
 ```bash
+cd backend
 dotnet build
 ```
 
 ### Run the web service locally:
 ```bash
 # Make sure PostgreSQL is running (locally or via Docker)
+cd backend
 dotnet run --project src/Applications/Movies.WebService
 ```
 
@@ -262,14 +279,17 @@ docker-compose down
 ### Running the tests
 Run the full test suite (all test projects in the solution):
 ```bash
+cd backend
 dotnet test
 ```
 
 ### Generating a coverage report
 Coverage is **opt-in** — a plain `dotnet test` reports pass/fail only. To produce a
-browsable HTML coverage report, use the `coverage.ps1` script at the repo root:
+browsable HTML coverage report, use the `coverage.ps1` script in the `backend/` folder:
 
 ```bash
+cd backend
+
 # Windows
 .\coverage.ps1
 
