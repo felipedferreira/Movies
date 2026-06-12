@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Mono-repo layout** - Restructured the repository for a future standalone frontend:
+  - All .NET solution files (`src/`, `tests/`, `Movies.slnx`, build props, `global.json`, coverage scripts) moved under `backend/` with `git mv` to preserve history
+  - `frontend/` placeholder added for the upcoming SPA (Angular or React), which will consume the backend's OpenAPI spec
+  - New repository-level `README.md` landing page; the architecture guide moved to `backend/README.md`
+  - `compose.yaml` build context repointed to `./backend`; CI workflow now runs `dotnet` commands from `backend/`
 - **Movies CRUD API** - First real resource, implemented with [FastEndpoints](https://fast-endpoints.com/) using the REPR (Request-Endpoint-Response) pattern — one class per endpoint under `Endpoints/Movies/`:
   - `GET /api/movies`, `GET /api/movies/{id}`, `POST /api/movies`, `PUT /api/movies/{id}`, `DELETE /api/movies/{id}`
   - `MovieMappings` - single translation point between `Contracts` DTOs and the `Domain.Movie` model

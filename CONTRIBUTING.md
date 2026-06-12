@@ -15,10 +15,10 @@ Be respectful, inclusive, and professional in all interactions.
 
 ### Setup Development Environment
 
-1. Clone the repository:
+1. Clone the repository and move into the backend folder (all `dotnet` commands run from `backend/`):
    ```bash
    git clone https://github.com/felipedferreira/Movies.git
-   cd Movies
+   cd Movies/backend
    ```
 
 2. Restore dependencies:
@@ -117,7 +117,7 @@ We use [Semantic Versioning](https://semver.org/): **MAJOR.MINOR.PATCH**
 
 ### Updating Version Numbers
 
-Version numbers are centralized in `Directory.Build.props`:
+Version numbers are centralized in `backend/Directory.Build.props`:
 
 ```xml
 <PropertyGroup>
@@ -198,6 +198,8 @@ Main branch is protected with:
 - ✅ Prevent stale PRs from being merged
 
 ## Common Tasks
+
+All commands below run from the `backend/` folder.
 
 ### Running a Specific Test
 
