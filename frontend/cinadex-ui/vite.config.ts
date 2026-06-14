@@ -15,11 +15,13 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
     coverage: {
       provider: 'v8',
-      // `text` for the terminal, `html` for local browsing, and
+      // `text` for the terminal, `html` for local browsing,
       // `lcov` + `cobertura` for CI pipelines (Codecov, SonarQube,
-      // GitLab, Azure DevOps, etc.).
-      reporter: ['text', 'html', 'lcov', 'cobertura'],
+      // GitLab, Azure DevOps, etc.), and `json` + `json-summary` for
+      // the GitHub job-summary coverage report action.
+      reporter: ['text', 'html', 'lcov', 'cobertura', 'json', 'json-summary'],
       reportsDirectory: './coverage',
+      reportOnFailure: true,
       include: ['src/**/*.{ts,tsx}'],
       exclude: [
         'src/**/*.test.{ts,tsx}',

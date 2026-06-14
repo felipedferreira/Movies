@@ -46,6 +46,10 @@ jobs:
   frontend:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      pull-requests: write
+
     defaults:
       run:
         working-directory: frontend/cinadex-ui
@@ -72,5 +76,11 @@ jobs:
     - name: Build
       run: npm run build
 
-    - name: Run tests
-      run: npm run test:run
+    - name: Run tests with coverage
+      run: npm run coverage
+
+    - name: Coverage summary
+      if: always()
+      uses: davelosert/vitest-coverage-report-action@v2
+      with:
+        working-directory: frontend/cinadex-ui
