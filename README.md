@@ -14,7 +14,7 @@ Movies/
 ```
 
 - **[Backend](backend/README.md)** — clean architecture .NET solution: architecture guide, build/test/migration instructions
-- **[Frontend](frontend/README.md)** — standalone React + TypeScript + Vite SPA (`cinadex-ui`)
+- **[Frontend](frontend/cinadex-ui/README.md)** — standalone React + TypeScript + Vite SPA (`cinadex-ui`)
 - **[Changelog](CHANGELOG.md)** — version history and release notes
 
 ## 🚀 Quick Start
