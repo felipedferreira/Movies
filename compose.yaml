@@ -34,6 +34,17 @@
       ConnectionStrings__DefaultConnection: "Host=postgres;Database=movies;Username=movies_rw;Password=P@ssw0rd!Secure#2024"
       Kestrel__Endpoints__Http__Url: "http://0:0:0:0:8080"
 
+  cinadex-ui:
+    image: cinadex-ui
+    build:
+      context: ./frontend/cinadex-ui
+    container_name: cinadex-ui
+    ports:
+      - "127.0.0.1:9000:80"
+    depends_on:
+      movies.webservice:
+        condition: service_started
+
 volumes:
   postgres_data:
 
