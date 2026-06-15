@@ -1,20 +1,115 @@
-# React + TypeScript + Vite
+# cinadex-ui
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The standalone SPA for the Movies project. It consumes the backend's OpenAPI spec (`http://localhost:8080/openapi/v1.json`).
 
-Currently, two official plugins are available:
+## 📁 Layout
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```
+cinadex-ui/
+├── public/          # Static assets (favicon, icons)
+├── src/
+│   ├── assets/      # Imported assets (images, SVGs)
+│   ├── test/        # Global test setup (jest-dom, jsdom cleanup)
+│   ├── App.tsx      # Root component
+│   └── main.tsx     # Entry point
+├── eslint.config.js
+├── vite.config.ts
+└── package.json
+```
 
-## React Compiler
+## 🧰 Tech Stack
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- **[React 19](https://react.dev/)** with the [React Compiler](https://react.dev/learn/react-compiler)
+- **[TypeScript](https://www.typescriptlang.org/)**
+- **[Vite](https://vite.dev/)** for dev server, HMR, and builds
+- **[Vitest](https://vitest.dev/)** with [Testing Library](https://testing-library.com/) for unit/component tests
+- **[ESLint](https://eslint.org/)** with type-aware rules (`typescript-eslint` strict + stylistic, React Hooks)
+- **[Prettier](https://prettier.io/)** for consistent code formatting
 
-Note: This will impact Vite dev & build performances.
+## 🚀 Getting Started
 
-## Linting & formatting
+Prerequisites: [Node.js](https://nodejs.org/) (LTS recommended) and npm.
 
-This project already runs **type-aware** ESLint (`typescript-eslint` `strictTypeChecked` + `stylisticTypeChecked`) wired to the TypeScript project via `parserOptions.projectService`, alongside [Prettier](https://prettier.io/) for formatting (`eslint-config-prettier` keeps the two from conflicting). See [`eslint.config.js`](eslint.config.js) and [`.prettierrc.json`](.prettierrc.json).
+```bash
+npm install     # install dependencies
+npm run dev     # start the dev server with HMR
+```
 
-Use `npm run lint`, `npm run lint:fix`, `npm run format`, and `npm run format:check`. See the [frontend README](../README.md) for the full script reference and how these are enforced in CI.
+The dev server runs on http://localhost:9000 (configured in [`vite.config.ts`](vite.config.ts)).
+
+## 📜 Scripts
+
+| Script                 | Description                                     |
+| ---------------------- | ----------------------------------------------- |
+| `npm run dev`          | Start the Vite dev server with HMR              |
+| `npm run build`        | Type-check and build for production to `dist/`  |
+| `npm run preview`      | Preview the production build locally            |
+| `npm run lint`         | Lint the project with ESLint                    |
+| `npm run lint:fix`     | Lint and auto-fix fixable problems              |
+| `npm run format`       | Format all files with Prettier                  |
+| `npm run format:check` | Check formatting without writing (CI-friendly)  |
+| `npm run test`         | Run the test suite in watch mode (Vitest)       |
+| `npm run test:run`     | Run the test suite once (CI-friendly)           |
+| `npm run test:ui`      | Run tests in the interactive Vitest UI          |
+| `npm run coverage`     | Run tests once and generate a coverage report   |
+
+## 🎨 Linting & Formatting
+
+[ESLint](https://eslint.org/) handles code quality and [Prettier](https://prettier.io/) handles formatting; the two are kept from overlapping via [`eslint-config-prettier`](https://github.com/prettier/eslint-config-prettier).
+
+- ESLint uses **type-aware** rules (`typescript-eslint` `strictTypeChecked` + `stylisticTypeChecked`), so it reads the TypeScript project to catch type-level issues. Config: [`eslint.config.js`](eslint.config.js).
+- Prettier settings live in [`.prettierrc.json`](.prettierrc.json) (single quotes, no semicolons).
+
+```bash
+npm run lint          # report problems
+npm run lint:fix      # report + auto-fix
+npm run format        # rewrite files to match Prettier
+npm run format:check  # verify formatting (used in CI)
+```
+
+CI runs `lint`, `format:check`, `build`, and `test:run` for the frontend, so all four must pass before a change can merge.
+
+## 🧪 Testing
+
+Tests are written with [Vitest](https://vitest.dev/) and [Testing Library](https://testing-library.com/), running in a [jsdom](https://github.com/jsdom/jsdom) environment.
+
+- Configuration lives in the `test` block of [`vite.config.ts`](vite.config.ts).
+- Global setup (jest-dom matchers and DOM cleanup) is in `src/test/setup.ts`.
+- Test files live next to the code they cover and are named `*.test.ts` / `*.test.tsx`.
+
+```bash
+npm run test        # watch mode during development
+npm run test:run    # single run, e.g. in CI
+```
+
+### Interactive UI
+
+For a richer development experience, [`@vitest/ui`](https://vitest.dev/guide/ui.html) opens a browser dashboard to explore tests, results, and module graphs:
+
+```bash
+npm run test:ui
+```
+
+### Coverage
+
+Coverage is collected with the [V8 provider](https://vitest.dev/guide/coverage.html) and written to `coverage/` (git-ignored):
+
+```bash
+npm run coverage
+```
+
+The following reporters are configured in [`vite.config.ts`](vite.config.ts) so the output works both locally and in CI pipelines:
+
+| Reporter    | Output                          | Use                                              |
+| ----------- | ------------------------------- | ------------------------------------------------ |
+| `text`      | terminal                        | quick summary while developing                   |
+| `html`      | `coverage/index.html`           | browsable local report                           |
+| `lcov`      | `coverage/lcov.info`            | Codecov, Coveralls, SonarQube, etc.              |
+| `cobertura` | `coverage/cobertura-coverage.xml` | GitLab CI, Azure DevOps, Jenkins coverage gates |
+
+## 🔌 Backend
+
+The SPA consumes the backend API. With the backend running (see the [root README](../../README.md)), the API is available at:
+
+- **API:** http://localhost:8080
+- **OpenAPI Spec:** http://localhost:8080/openapi/v1.json
