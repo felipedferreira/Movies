@@ -1,14 +1,20 @@
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Movies.Application.Abstractions;
 using Movies.Application.Exceptions;
 using Movies.Domain;
 
 namespace Movies.Application.Movies.UpdateMovie;
 
-internal sealed class UpdateMovieHandler(IMovieRepository repository, IValidator<UpdateMovieCommand> validator) : IUpdateMovieHandler
+internal sealed class UpdateMovieHandler(
+    IMovieRepository repository,
+    IValidator<UpdateMovieCommand> validator,
+    ILogger<UpdateMovieHandler> logger) : IUpdateMovieHandler
 {
     public async Task<MovieDto> Handle(UpdateMovieCommand command, CancellationToken cancellationToken)
     {
+        logger.LogInformation("Updating movie {MovieId}.", command.Id);
+
         await validator.ValidateAndThrowAsync(command, cancellationToken);
 
         var movie = new Movie
@@ -23,8 +29,11 @@ internal sealed class UpdateMovieHandler(IMovieRepository repository, IValidator
 
         if (!updated)
         {
+            logger.LogWarning("Movie {MovieId} was not found for update.", command.Id);
             throw new EntityNotFoundException(nameof(Movie), command.Id);
         }
+
+        logger.LogInformation("Updated movie {MovieId}.", movie.Id);
 
         return movie.ToDto();
     }
