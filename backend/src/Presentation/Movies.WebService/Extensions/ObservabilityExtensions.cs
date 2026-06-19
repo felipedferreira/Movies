@@ -16,6 +16,8 @@ public static class ObservabilityExtensions
     /// endpoint is configured (local <c>dotnet run</c>, integration tests) the exporters are
     /// omitted so nothing tries to reach a Seq that isn't there.
     /// </summary>
+    /// <param name="builder">The web application builder to configure.</param>
+    /// <returns>The same <paramref name="builder"/> instance so calls can be chained.</returns>
     public static WebApplicationBuilder AddObservability(this WebApplicationBuilder builder)
     {
         var otlpEndpointConfigured =

@@ -14,6 +14,8 @@ public static class ServiceRegistrationExtensions
     /// Registers the application, persistence and web-service services (endpoints, OpenAPI,
     /// problem details, health checks and exception handlers) with the DI container.
     /// </summary>
+    /// <param name="builder">The web application builder to configure.</param>
+    /// <returns>The same <paramref name="builder"/> instance so calls can be chained.</returns>
     public static WebApplicationBuilder AddPresentationServices(this WebApplicationBuilder builder)
     {
         builder.Services

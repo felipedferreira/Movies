@@ -14,6 +14,8 @@ public static class RequestPipelineExtensions
     /// Configures the HTTP request pipeline: base path, health checks, exception handling,
     /// correlation IDs, API documentation, static files and FastEndpoints.
     /// </summary>
+    /// <param name="app">The web application whose request pipeline is configured.</param>
+    /// <returns>The same <paramref name="app"/> instance so calls can be chained.</returns>
     public static WebApplication ConfigureRequestPipeline(this WebApplication app)
     {
         // Serve the application under the "/movies-svc" base path
@@ -45,6 +47,8 @@ public static class RequestPipelineExtensions
     /// <summary>
     /// Maps the liveness and readiness health check endpoints.
     /// </summary>
+    /// <param name="app">The web application to map the health check endpoints on.</param>
+    /// <returns>The same <paramref name="app"/> instance so calls can be chained.</returns>
     private static WebApplication MapHealthCheckEndpoints(this WebApplication app)
     {
         app.MapHealthChecks("/health/live", new HealthCheckOptions
@@ -66,6 +70,8 @@ public static class RequestPipelineExtensions
     /// Maps the OpenAPI document and Scalar API reference UI when
     /// <c>Features:ApiDocumentationEnabled</c> is enabled.
     /// </summary>
+    /// <param name="app">The web application to map the API documentation on.</param>
+    /// <returns>The same <paramref name="app"/> instance so calls can be chained.</returns>
     private static WebApplication MapApiDocumentation(this WebApplication app)
     {
         // Configure the HTTP request pipeline

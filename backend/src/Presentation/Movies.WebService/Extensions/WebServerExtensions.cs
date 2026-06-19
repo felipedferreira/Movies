@@ -8,6 +8,8 @@ public static class WebServerExtensions
     /// <summary>
     /// Configures Kestrel server timeouts to protect against slow or idle connections.
     /// </summary>
+    /// <param name="builder">The web application builder to configure.</param>
+    /// <returns>The same <paramref name="builder"/> instance so calls can be chained.</returns>
     public static WebApplicationBuilder ConfigureWebServer(this WebApplicationBuilder builder)
     {
         builder.WebHost.ConfigureKestrel((context, options) =>
