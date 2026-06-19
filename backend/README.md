@@ -2,9 +2,21 @@
 
 [![Build and Test](https://github.com/felipedferreira/Movies/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/felipedferreira/Movies/actions/workflows/build-and-test.yml)
 
-A clean architecture .NET solution for managing movies, crew members, and their roles — inspired by IMDB. Built with a focus on separation of concerns, testability, and maintainability.
+A clean architecture .NET solution for managing movies, their genres, crew members, and roles — inspired by IMDB. Built with a focus on separation of concerns, testability, and maintainability.
 
 All `dotnet` commands below are run from this folder (`backend/`). Docker Compose commands run from the repository root, where [compose.yaml](../compose.yaml) lives.
+
+## 🏷️ Genres
+
+Genres are a first-class resource, not just a label on a movie. Each genre is its own
+record (`Id`, `Name`, `Description`) stored in the `genres` table, and movies link to
+genres through a many-to-many relationship backed by a `movie_genres` junction table.
+
+- **CRUD endpoints** under `/movies-svc/genres` (`GET`, `GET /{id}`, `POST`, `PUT /{id}`, `DELETE /{id}`).
+- **Movies reference genres by id** — `CreateMoviesRequest`/`UpdateMoviesRequest` carry a `GenreIds` collection, and movie responses include the linked genres.
+- **Seeded data** — the database ships with 17 common genres (Action, Comedy, Drama, …) so movies can be tagged immediately.
+
+See the [contracts README](src/Libraries/Movies.WebService.Contracts/README.md) for the request/response DTOs.
 
 ## 🗄️ Database
 
@@ -309,7 +321,7 @@ backend/src/
 **Purpose:** Core business logic and domain entities  
 **Dependencies:** None  
 **Responsibilities:**
-- Domain entities — `Movie`, `CrewMember`, `Role`, etc.
+- Domain entities — `Movie`, `Genre`, `CrewMember`, `Role`, etc.
 - Business rules and invariants
 - No external dependencies (no EF, no web frameworks)
 
