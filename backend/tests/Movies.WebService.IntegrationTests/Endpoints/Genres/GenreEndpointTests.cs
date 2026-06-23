@@ -61,7 +61,7 @@ public sealed class GenreEndpointTests(WebApplicationFixture fixture) : IClassFi
 
         var update = new UpdateGenreRequest { Name = "Heist Thriller" };
         var updateResponse = await fixture.Client.PutAsJsonAsync($"{GenresEndpoint}/{created.Id}", update);
-        Assert.Equal(HttpStatusCode.NoContent, updateResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.Accepted, updateResponse.StatusCode);
 
         var fetched = await fixture.Client.GetFromJsonAsync<GenreResponse>($"{GenresEndpoint}/{created.Id}");
         Assert.NotNull(fetched);
