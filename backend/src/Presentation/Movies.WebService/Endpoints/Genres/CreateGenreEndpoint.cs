@@ -4,7 +4,7 @@ using Movies.WebService.Contracts.Requests;
 
 namespace Movies.WebService.Endpoints.Genres;
 
-internal sealed class CreateGenreEndpoint(ICreateGenreHandler handler) : Endpoint<CreateGenreRequest>
+internal sealed class CreateGenreEndpoint(ICreateGenreHandler handler) : Endpoint<CreateGenreRequest, EmptyResponse>
 {
     public override void Configure()
     {
@@ -16,8 +16,8 @@ internal sealed class CreateGenreEndpoint(ICreateGenreHandler handler) : Endpoin
     {
         var genre = await handler.Handle(request.ToCommand(), cancellationToken);
 
-        HttpContext.Response.StatusCode = 204;
+        Response = new EmptyResponse();
+        HttpContext.Response.StatusCode = 201;
         HttpContext.Response.Headers.Location = $"/genres/{genre.Id}";
-        await HttpContext.Response.CompleteAsync();
     }
 }

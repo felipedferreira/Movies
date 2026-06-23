@@ -9,7 +9,7 @@ public sealed class CreateMovieEndpointTests(WebApplicationFixture fixture) : IC
     private const string MoviesEndpoint = "/movies-svc/movies";
 
     [Fact]
-    public async Task CreateMovie_WithValidRequest_Returns204NoContent()
+    public async Task CreateMovie_WithValidRequest_Returns201Created()
     {
         var request = new CreateMoviesRequest
         {
@@ -19,7 +19,7 @@ public sealed class CreateMovieEndpointTests(WebApplicationFixture fixture) : IC
 
         var response = await fixture.Client.PostAsJsonAsync(MoviesEndpoint, request);
 
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
 
     [Fact]

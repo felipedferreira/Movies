@@ -22,7 +22,7 @@ public sealed class GenreEndpointTests(WebApplicationFixture fixture) : IClassFi
     }
 
     [Fact]
-    public async Task CreateGenre_Returns204AndIsRetrievable()
+    public async Task CreateGenre_Returns201AndIsRetrievable()
     {
         var request = new CreateGenreRequest
         {
@@ -30,7 +30,7 @@ public sealed class GenreEndpointTests(WebApplicationFixture fixture) : IClassFi
         };
 
         var createResponse = await fixture.Client.PostAsJsonAsync(GenresEndpoint, request);
-        Assert.Equal(HttpStatusCode.NoContent, createResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
 
         Assert.NotNull(createResponse.Headers.Location);
         var locationUri = createResponse.Headers.Location.ToString();
@@ -61,7 +61,7 @@ public sealed class GenreEndpointTests(WebApplicationFixture fixture) : IClassFi
 
         var update = new UpdateGenreRequest { Name = "Heist Thriller" };
         var updateResponse = await fixture.Client.PutAsJsonAsync($"{GenresEndpoint}/{created.Id}", update);
-        Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, updateResponse.StatusCode);
 
         var fetched = await fixture.Client.GetFromJsonAsync<GenreResponse>($"{GenresEndpoint}/{created.Id}");
         Assert.NotNull(fetched);

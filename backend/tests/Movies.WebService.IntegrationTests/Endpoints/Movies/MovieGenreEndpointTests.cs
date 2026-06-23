@@ -88,7 +88,7 @@ public sealed class MovieGenreEndpointTests(WebApplicationFixture fixture) : ICl
             YearOfRelease = 1995,
             GenreIds = [crime.Id],
         });
-        Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, updateResponse.StatusCode);
 
         var fetched = await fixture.Client.GetFromJsonAsync<MovieDetailsResponse>($"{MoviesEndpoint}/{id}");
 

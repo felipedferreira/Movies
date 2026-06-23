@@ -1,11 +1,10 @@
 using FastEndpoints;
 using Movies.Application.Genres.UpdateGenre;
 using Movies.WebService.Contracts.Requests;
-using Movies.WebService.Contracts.Responses;
 
 namespace Movies.WebService.Endpoints.Genres;
 
-internal sealed class UpdateGenreEndpoint(IUpdateGenreHandler handler) : Endpoint<UpdateGenreRequest, GenreResponse>
+internal sealed class UpdateGenreEndpoint(IUpdateGenreHandler handler) : Endpoint<UpdateGenreRequest>
 {
     public override void Configure()
     {
@@ -16,7 +15,7 @@ internal sealed class UpdateGenreEndpoint(IUpdateGenreHandler handler) : Endpoin
     public override async Task HandleAsync(UpdateGenreRequest request, CancellationToken cancellationToken)
     {
         var id = Route<Guid>("id");
-        var genre = await handler.Handle(request.ToCommand(id), cancellationToken);
-        await Send.OkAsync(genre.ToResponse(), cancellationToken);
+        await handler.Handle(request.ToCommand(id), cancellationToken);
+        await Send.NoContentAsync(cancellationToken);
     }
 }
