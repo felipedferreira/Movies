@@ -9,7 +9,7 @@ internal sealed class DefaultExceptionHandler(ILogger<DefaultExceptionHandler> l
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        logger.LogError(exception, LogMessageConstants.UnhandledExceptionOccurred);
+        logger.LogError(exception, "Unhandled exception occurred.");
 
         var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
 
@@ -18,10 +18,10 @@ internal sealed class DefaultExceptionHandler(ILogger<DefaultExceptionHandler> l
 
         var response = new
         {
-            type = ProblemDetailsConstants.InternalServerErrorType,
-            title = ProblemDetailsConstants.InternalServerErrorTitle,
+            type = "https://httpwg.org/specs/rfc7231.html#status.500",
+            title = "Internal Server Error",
             status = StatusCodes.Status500InternalServerError,
-            detail = ProblemDetailsConstants.InternalServerErrorDetail,
+            detail = "An unhandled exception occurred.",
             instance = httpContext.Request.Path.Value,
             extensions = new { traceId },
         };

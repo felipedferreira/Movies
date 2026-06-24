@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using Movies.Application.Abstractions;
-using Movies.Application.Constants;
 using Movies.Application.Exceptions;
 using Movies.Domain.GenreAggregate;
 
@@ -16,11 +15,11 @@ internal sealed class GetGenreByIdHandler(
 
         if (genre is null)
         {
-            logger.LogWarning(LogMessageConstants.Genre.NotFound, query.Id);
+            logger.LogWarning("Genre {GenreId} was not found.", query.Id);
             throw new EntityNotFoundException(nameof(Genre), query.Id);
         }
 
-        logger.LogInformation(LogMessageConstants.Genre.Retrieved, genre.Id);
+        logger.LogInformation("Retrieved genre {GenreId}.", genre.Id);
 
         return genre.ToDto();
     }

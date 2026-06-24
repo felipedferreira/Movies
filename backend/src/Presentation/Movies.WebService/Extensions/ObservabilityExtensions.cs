@@ -24,7 +24,7 @@ public static class ObservabilityExtensions
         var otlpEndpointConfigured =
             !string.IsNullOrWhiteSpace(builder.Configuration[ConfigurationConstants.OtlpEndpoint]);
 
-        var serviceName = builder.Configuration[ConfigurationConstants.OtelServiceName] ?? ObservabilityConstants.ServiceName;
+        var serviceName = builder.Configuration[ConfigurationConstants.OtelServiceName] ?? "Movies.WebService";
 
         builder.Services
             .AddOpenTelemetry()
@@ -34,7 +34,7 @@ public static class ObservabilityExtensions
                 tracing
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddSource(ObservabilityConstants.NpgsqlActivitySource); // EF Core/Npgsql emit DB spans on this ActivitySource
+                    .AddSource("Npgsql"); // EF Core/Npgsql emit DB spans on this ActivitySource
 
                 if (otlpEndpointConfigured)
                 {

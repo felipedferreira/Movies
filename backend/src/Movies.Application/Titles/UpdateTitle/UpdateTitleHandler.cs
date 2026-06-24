@@ -1,7 +1,6 @@
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Movies.Application.Abstractions;
-using Movies.Application.Constants;
 using Movies.Application.Exceptions;
 using Movies.Domain.TitleAggregate;
 
@@ -15,7 +14,7 @@ internal sealed class UpdateTitleHandler(
 {
     public async Task<TitleDetailsDto> Handle(UpdateTitleCommand command, CancellationToken cancellationToken)
     {
-        logger.LogInformation(LogMessageConstants.Title.Updating, command.Id);
+        logger.LogInformation("Updating title {TitleId}.", command.Id);
 
         await validator.ValidateAndThrowAsync(command, cancellationToken);
 
@@ -36,11 +35,11 @@ internal sealed class UpdateTitleHandler(
 
         if (!updated)
         {
-            logger.LogWarning(LogMessageConstants.Title.NotFoundForUpdate, command.Id);
+            logger.LogWarning("Title {TitleId} was not found for update.", command.Id);
             throw new EntityNotFoundException(nameof(Title), command.Id);
         }
 
-        logger.LogInformation(LogMessageConstants.Title.Updated, title.Id);
+        logger.LogInformation("Updated title {TitleId}.", title.Id);
 
         return title.ToDetailsDto(genres);
     }

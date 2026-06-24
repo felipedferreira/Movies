@@ -28,10 +28,10 @@ internal sealed class ValidationExceptionHandler : IExceptionHandler
 
         var response = new
         {
-            type = ProblemDetailsConstants.BadRequestType,
-            title = ProblemDetailsConstants.BadRequestTitle,
+            type = "https://httpwg.org/specs/rfc7231.html#status.400",
+            title = "Bad Request",
             status = StatusCodes.Status400BadRequest,
-            detail = ProblemDetailsConstants.ValidationErrorDetail,
+            detail = "One or more validation errors occurred.",
             instance = httpContext.Request.Path.Value,
             errors,
             extensions = new { traceId },

@@ -36,14 +36,14 @@ public static class ServiceRegistrationExtensions
             ?? throw new InvalidOperationException(
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    ExceptionMessageConstants.ConnectionStringNotConfigured,
+                    "Connection string '{0}' is not configured.",
                     ConfigurationConstants.DefaultConnection));
 
         builder.Services
             .AddHealthChecks()
             .AddNpgSql(
                 connectionString: connectionString,
-                name: HealthCheckConstants.PostgresName,
+                name: "postgres",
                 tags: [HealthCheckConstants.ReadyTag]);
 
         // Register exception handlers in chain order — DefaultExceptionHandler must be last (catch-all)

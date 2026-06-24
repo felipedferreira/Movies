@@ -22,8 +22,8 @@ internal sealed class EntityNotFoundExceptionHandler : IExceptionHandler
 
         var response = new
         {
-            type = ProblemDetailsConstants.NotFoundType,
-            title = ProblemDetailsConstants.NotFoundTitle,
+            type = "https://httpwg.org/specs/rfc7231.html#status.404",
+            title = "Not Found",
             status = StatusCodes.Status404NotFound,
             detail = entityNotFoundException.Message,
             instance = httpContext.Request.Path.Value,

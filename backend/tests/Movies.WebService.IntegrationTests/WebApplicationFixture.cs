@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Movies.Persistence.Postgres;
-using Movies.WebService.IntegrationTests.Constants;
 using Testcontainers.PostgreSql;
 
 namespace Movies.WebService.IntegrationTests;
@@ -12,7 +11,7 @@ namespace Movies.WebService.IntegrationTests;
 public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer postgresContainer = new PostgreSqlBuilder()
-        .WithImage(TestConfigurationConstants.PostgresImage)
+        .WithImage("postgres:17-alpine")
         .Build();
 
     public HttpClient Client { get; private set; } = null!;
@@ -41,7 +40,7 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                [TestConfigurationConstants.DefaultConnectionPath] = this.postgresContainer.GetConnectionString(),
+                ["ConnectionStrings:DefaultConnection"] = this.postgresContainer.GetConnectionString(),
             });
         });
     }

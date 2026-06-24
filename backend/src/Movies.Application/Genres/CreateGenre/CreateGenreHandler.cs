@@ -1,7 +1,6 @@
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Movies.Application.Abstractions;
-using Movies.Application.Constants;
 using Movies.Domain.GenreAggregate;
 
 namespace Movies.Application.Genres.CreateGenre;
@@ -13,7 +12,7 @@ internal sealed class CreateGenreHandler(
 {
     public async Task<GenreDto> Handle(CreateGenreCommand command, CancellationToken cancellationToken)
     {
-        logger.LogInformation(LogMessageConstants.Genre.Creating, command.Name);
+        logger.LogInformation("Creating genre {Name}.", command.Name);
 
         await validator.ValidateAndThrowAsync(command, cancellationToken);
 
@@ -24,7 +23,7 @@ internal sealed class CreateGenreHandler(
 
         var created = await repository.CreateAsync(genre, cancellationToken);
 
-        logger.LogInformation(LogMessageConstants.Genre.Created, created.Id, created.Name);
+        logger.LogInformation("Created genre {GenreId} ({Name}).", created.Id, created.Name);
 
         return created.ToDto();
     }

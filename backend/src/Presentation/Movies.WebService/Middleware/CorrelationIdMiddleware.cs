@@ -13,14 +13,14 @@ public class CorrelationIdMiddleware(RequestDelegate next, ILogger<CorrelationId
         // (OpenTelemetry logging is configured with IncludeScopes = true) and stamp it on
         // the active trace so logs and the request's trace are searchable by it in Seq.
         var scopeState = new Dictionary<string, object> { [HttpConstants.CorrelationIdScopeKey] = correlationId };
-        Activity.Current?.SetTag(HttpConstants.CorrelationIdTraceTag, correlationId);
+        Activity.Current?.SetTag("correlation_id", correlationId);
 
         using (logger.BeginScope(scopeState))
         {
             context.Items[HttpConstants.CorrelationIdScopeKey] = correlationId;
             context.Response.Headers.Append(HttpConstants.CorrelationIdHeaderName, correlationId);
 
-            logger.LogInformation(LogMessageConstants.RequestStartedWithCorrelationId, correlationId);
+            logger.LogInformation("Request started with CorrelationId: {CorrelationId}", correlationId);
 
             await next(context);
         }

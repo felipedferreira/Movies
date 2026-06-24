@@ -77,7 +77,7 @@ public static class RequestPipelineExtensions
     /// <returns>A task that completes when the response has been written.</returns>
     private static Task WriteHealthResponse(HttpContext context, HealthReport report)
     {
-        context.Response.ContentType = HttpConstants.ApplicationJson;
+        context.Response.ContentType = "application/json";
 
         var payload = new
         {
@@ -111,14 +111,13 @@ public static class RequestPipelineExtensions
         app.MapOpenApi();
         app.MapScalarApiReference(options =>
         {
-            // Group endpoints by OpenAPI tags and keep operations ordered by path within each resource.
             options.TagSorter = TagSorter.Alpha;
             options.EnabledClients = [ScalarClient.HttpClient, ScalarClient.Axios, ScalarClient.Fetch];
             options.EnabledTargets = [ScalarTarget.CSharp, ScalarTarget.JavaScript];
             options.Theme = ScalarTheme.Solarized;
             options.Favicon = ApiConstants.FaviconPath;
             options.EndpointPathPrefix = ApiConstants.ApiDocsRoute;
-            options.Title = ScalarConstants.ApiDocumentationTitle;
+            options.Title = "API Documentation - {documentName}";
         });
 
         return app;
