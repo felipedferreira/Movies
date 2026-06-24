@@ -24,7 +24,7 @@ Create the root `.env` file (needed for the Seq observability stack — see the
 Docker Compose from the repository root:
 
 ```bash
-cp .env.example .env       # one-time; fill in the Seq values
+cp .env.example .env       # one-time; fill in the database and Seq values
 docker compose up --build
 ```
 

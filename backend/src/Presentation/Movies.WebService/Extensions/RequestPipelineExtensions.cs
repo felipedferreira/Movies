@@ -38,7 +38,7 @@ public static class RequestPipelineExtensions
         app.UseDefaultFiles();
         app.UseStaticFiles();
 
-        // Map FastEndpoints (Movies, ...)
+        // Map FastEndpoints.
         app.UseFastEndpoints();
 
         return app;

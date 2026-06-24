@@ -20,7 +20,7 @@ internal sealed class GenreRepository(FilmDbContext dbContext) : IGenreRepositor
         }
 
         // Read-only: genres are only used to validate referenced ids and enrich responses,
-        // never attached to a movie aggregate.
+        // never attached to a title aggregate.
         return await dbContext.Genres.AsNoTracking().Where(g => ids.Contains(g.Id)).ToListAsync(cancellationToken);
     }
 

@@ -11,14 +11,14 @@ dotnet add package Movies.WebService.Contracts
 ## Contents
 
 ### Requests
-- **CreateMoviesRequest**: DTO for creating a new movie
-- **UpdateMoviesRequest**: DTO for updating a movie
+- **CreateTitlesRequest**: DTO for creating a new title
+- **UpdateTitlesRequest**: DTO for updating a title
 - **CreateGenreRequest**: DTO for creating a new genre
 - **UpdateGenreRequest**: DTO for updating a genre
 
 ### Responses
-- **MovieResponse**: DTO for movie response data
-- **MoviesResponse**: DTO for movies list response
+- **TitleResponse**: DTO for title response data
+- **TitlesResponse**: DTO for titles list response
 - **GenreResponse**: DTO for genre response data
 - **GenresResponse**: DTO for genres list response
 
@@ -28,7 +28,7 @@ dotnet add package Movies.WebService.Contracts
 using Movies.WebService.Contracts.Requests;
 using Movies.WebService.Contracts.Responses;
 
-var request = new CreateMoviesRequest
+var request = new CreateTitlesRequest
 {
     Title = "Inception",
     YearOfRelease = 2010,
@@ -37,7 +37,7 @@ var request = new CreateMoviesRequest
 };
 ```
 
-Genres are managed as their own resource (`/genres`) and referenced from movies by id.
+Genres are managed as their own resource (`/genres`) and referenced from titles by id.
 
 ## License
 

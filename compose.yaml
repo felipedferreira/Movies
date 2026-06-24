@@ -18,20 +18,18 @@
 
   # Structured logs + traces are ingested by Seq over OTLP.
   # First-run setup: sign in to the UI at http://localhost:5341 as `admin` with the
-  # SEQ_ADMIN_PASSWORD from your .env, create an API key under Settings -> API Keys,
-  # set its token to the SEQ_API_KEY value, then restart movies.webservice.
+  # SEQ_ADMIN_PASSWORD from your .env. Seq will require you to choose a permanent
+  # password on first login. Create an API key under Settings -> API Keys, set its
+  # token to the SEQ_API_KEY value, then restart movies.webservice.
   # CI alternative: `seqcli apikey create --token=$SEQ_API_KEY`.
   seq:
     image: datalust/seq:latest
     container_name: movies-seq
     environment:
       ACCEPT_EULA: "Y"
-      # Seq refuses to start on first run without an admin password. We seed a permanent
-      # password *hash* (not the plaintext SEQ_FIRSTRUN_ADMINPASSWORD, which forces an
-      # interactive change on first login and blocks automation). Sign in as `admin` with
-      # the plaintext SEQ_ADMIN_PASSWORD. Regenerate the hash with:
-      #   echo "<password>" | docker run --rm -i datalust/seq config hash
-      SEQ_FIRSTRUN_ADMINPASSWORDHASH: "${SEQ_ADMIN_PASSWORD_HASH}"
+      # Used only when the seq_data volume is empty. After first login, Seq stores
+      # the changed admin password in /data and this value no longer updates it.
+      SEQ_FIRSTRUN_ADMINPASSWORD: "${SEQ_ADMIN_PASSWORD}"
     ports:
       # Pinned to IPv4 loopback on purpose: a bare "5341:80" also binds [::]:5341, and on
       # Docker Desktop / Windows the IPv6 path for `localhost` (::1) accepts the connection
@@ -90,4 +88,3 @@
 volumes:
   postgres_data:
   seq_data:
-

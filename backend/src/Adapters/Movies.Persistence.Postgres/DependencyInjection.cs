@@ -16,7 +16,7 @@ public static class DependencyInjection
             var connectionString = configuation.GetConnectionString("DefaultConnection");
             options.UseNpgsql(connectionString);
         });
-        services.AddScoped<IMovieRepository, MovieRepository>();
+        services.AddScoped<ITitleRepository, TitleRepository>();
         services.AddScoped<IGenreRepository, GenreRepository>();
 
         return services;
