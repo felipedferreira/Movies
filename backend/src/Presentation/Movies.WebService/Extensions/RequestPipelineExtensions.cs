@@ -115,8 +115,8 @@ public static class RequestPipelineExtensions
             options.EnabledClients = [ScalarClient.HttpClient, ScalarClient.Axios, ScalarClient.Fetch];
             options.EnabledTargets = [ScalarTarget.CSharp, ScalarTarget.JavaScript];
             options.Theme = ScalarTheme.Solarized;
-            options.Favicon = ApiConstants.FaviconPath;
-            options.EndpointPathPrefix = ApiConstants.ApiDocsRoute;
+            options.Favicon = "/favicon.ico";
+            options.EndpointPathPrefix = "/api-docs/{documentName}";
             options.Title = "API Documentation - {documentName}";
         });
 

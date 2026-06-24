@@ -3,8 +3,6 @@ namespace Movies.WebService.Constants;
 internal static class ApiConstants
 {
     public const string BasePath = "/movies-svc";
-    public const string FaviconPath = "/favicon.ico";
-    public const string ApiDocsRoute = "/api-docs/{documentName}";
 
     public static class RouteParameters
     {

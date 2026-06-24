@@ -16,12 +16,12 @@ internal sealed class TitleConfiguration : IEntityTypeConfiguration<Title>
             .ValueGeneratedOnAdd();
 
         builder.Property(m => m.Name)
-            .HasColumnName(DatabaseConstants.Title.Columns.Title)
+            .HasColumnName("title")
             .HasMaxLength(500)
             .IsRequired();
 
         builder.Property(m => m.Type)
-            .HasColumnName(DatabaseConstants.Title.Columns.TitleType)
+            .HasColumnName("titleType")
             .HasMaxLength(50)
             .HasConversion<string>()
             .IsRequired();
@@ -35,6 +35,6 @@ internal sealed class TitleConfiguration : IEntityTypeConfiguration<Title>
         // Genre is a separate aggregate, referenced by identity only. The ids are stored as a
         // Postgres uuid[] column on the titles table; no join table, no cross-aggregate FK.
         builder.Property(m => m.GenreIds)
-            .HasColumnType(DatabaseConstants.PostgresTypes.UuidArray);
+            .HasColumnType("uuid[]");
     }
 }

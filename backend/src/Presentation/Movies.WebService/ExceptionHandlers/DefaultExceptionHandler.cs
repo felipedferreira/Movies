@@ -1,7 +1,7 @@
 using System.Diagnostics;
+using System.Net.Mime;
 using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics;
-using Movies.WebService.Constants;
 
 namespace Movies.WebService.ExceptionHandlers;
 
@@ -13,7 +13,7 @@ internal sealed class DefaultExceptionHandler(ILogger<DefaultExceptionHandler> l
 
         var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
 
-        httpContext.Response.ContentType = HttpConstants.ProblemJson;
+        httpContext.Response.ContentType = MediaTypeNames.Application.ProblemJson;
         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
         var response = new
