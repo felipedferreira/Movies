@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net.Mime;
 using System.Text.Json;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
@@ -16,7 +17,7 @@ internal sealed class ValidationExceptionHandler : IExceptionHandler
 
         var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
 
-        httpContext.Response.ContentType = "application/problem+json";
+        httpContext.Response.ContentType = MediaTypeNames.Application.ProblemJson;
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 
         var errors = validationException.Errors

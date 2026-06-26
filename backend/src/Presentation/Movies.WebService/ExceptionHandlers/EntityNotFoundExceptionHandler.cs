@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net.Mime;
 using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics;
 using Movies.Application.Exceptions;
@@ -16,7 +17,7 @@ internal sealed class EntityNotFoundExceptionHandler : IExceptionHandler
 
         var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
 
-        httpContext.Response.ContentType = "application/problem+json";
+        httpContext.Response.ContentType = MediaTypeNames.Application.ProblemJson;
         httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
 
         var response = new

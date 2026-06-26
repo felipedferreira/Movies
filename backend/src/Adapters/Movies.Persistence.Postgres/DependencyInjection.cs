@@ -10,13 +10,16 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services)
     {
-        services.AddDbContext<MoviesDbContext>((sp, options) =>
+        services.AddDbContext<FilmDbContext>((sp, options) =>
         {
             var configuation = sp.GetRequiredService<IConfiguration>();
             var connectionString = configuation.GetConnectionString("DefaultConnection");
-            options.UseNpgsql(connectionString);
+            options
+                .UseNpgsql(connectionString)
+                .UseCamelCaseNamingConvention();
         });
-        services.AddScoped<IMovieRepository, MovieRepository>();
+        services.AddScoped<ITitleRepository, TitleRepository>();
+        services.AddScoped<IGenreRepository, GenreRepository>();
 
         return services;
     }

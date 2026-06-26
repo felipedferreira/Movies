@@ -1,6 +1,7 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Movies.WebService.Constants;
 using Scalar.AspNetCore;
 
 namespace Movies.WebService.Extensions;
@@ -18,8 +19,8 @@ public static class RequestPipelineExtensions
     /// <returns>The same <paramref name="app"/> instance so calls can be chained.</returns>
     public static WebApplication ConfigureRequestPipeline(this WebApplication app)
     {
-        // Serve the application under the "/movies-svc" base path
-        app.UsePathBase("/movies-svc");
+        // Serve the application under the configured service base path.
+        app.UsePathBase(ApiConstants.BasePath);
 
         app.MapHealthCheckEndpoints();
 
@@ -38,7 +39,7 @@ public static class RequestPipelineExtensions
         app.UseDefaultFiles();
         app.UseStaticFiles();
 
-        // Map FastEndpoints (Movies, ...)
+        // Map FastEndpoints.
         app.UseFastEndpoints();
 
         return app;
@@ -51,15 +52,15 @@ public static class RequestPipelineExtensions
     /// <returns>The same <paramref name="app"/> instance so calls can be chained.</returns>
     private static WebApplication MapHealthCheckEndpoints(this WebApplication app)
     {
-        app.MapHealthChecks("/health/live", new HealthCheckOptions
+        app.MapHealthChecks(ApiConstants.Health.LiveRoute, new HealthCheckOptions
         {
             Predicate = _ => false,
             ResponseWriter = WriteHealthResponse,
         });
 
-        app.MapHealthChecks("/health/ready", new HealthCheckOptions
+        app.MapHealthChecks(ApiConstants.Health.ReadyRoute, new HealthCheckOptions
         {
-            Predicate = check => check.Tags.Contains("ready"),
+            Predicate = check => check.Tags.Contains(HealthCheckConstants.ReadyTag),
             ResponseWriter = WriteHealthResponse,
         });
 
@@ -101,7 +102,7 @@ public static class RequestPipelineExtensions
     {
         // Configure the HTTP request pipeline
         // API documentation is enabled via Features:ApiDocumentationEnabled configuration
-        var apiDocumentationEnabled = app.Configuration.GetValue("Features:ApiDocumentationEnabled", false);
+        var apiDocumentationEnabled = app.Configuration.GetValue(ConfigurationConstants.ApiDocumentationEnabled, false);
         if (!apiDocumentationEnabled)
         {
             return app;
@@ -110,8 +111,7 @@ public static class RequestPipelineExtensions
         app.MapOpenApi();
         app.MapScalarApiReference(options =>
         {
-            // Group endpoints by HTTP method (Scalar's supported operation sorter)
-            options.OperationSorter = OperationSorter.Method;
+            options.TagSorter = TagSorter.Alpha;
             options.EnabledClients = [ScalarClient.HttpClient, ScalarClient.Axios, ScalarClient.Fetch];
             options.EnabledTargets = [ScalarTarget.CSharp, ScalarTarget.JavaScript];
             options.Theme = ScalarTheme.Solarized;

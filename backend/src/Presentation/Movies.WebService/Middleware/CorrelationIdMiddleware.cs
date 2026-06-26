@@ -1,11 +1,10 @@
 using System.Diagnostics;
+using Movies.WebService.Constants;
 
 namespace Movies.WebService;
 
 public class CorrelationIdMiddleware(RequestDelegate next, ILogger<CorrelationIdMiddleware> logger)
 {
-    private const string CorrelationIdHeaderName = "X-Correlation-Id";
-
     public async Task InvokeAsync(HttpContext context)
     {
         var correlationId = GetOrCreateCorrelationId(context);
@@ -19,7 +18,7 @@ public class CorrelationIdMiddleware(RequestDelegate next, ILogger<CorrelationId
         using (logger.BeginScope(scopeState))
         {
             context.Items["CorrelationId"] = correlationId;
-            context.Response.Headers.Append(CorrelationIdHeaderName, correlationId);
+            context.Response.Headers.Append(HttpConstants.CorrelationIdHeaderName, correlationId);
 
             logger.LogInformation("Request started with CorrelationId: {CorrelationId}", correlationId);
 
@@ -29,7 +28,7 @@ public class CorrelationIdMiddleware(RequestDelegate next, ILogger<CorrelationId
 
     private static string GetOrCreateCorrelationId(HttpContext context)
     {
-        if (context.Request.Headers.TryGetValue(CorrelationIdHeaderName, out var correlationIdHeader))
+        if (context.Request.Headers.TryGetValue(HttpConstants.CorrelationIdHeaderName, out var correlationIdHeader))
         {
             return correlationIdHeader.ToString();
         }

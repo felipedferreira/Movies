@@ -2,9 +2,22 @@
 
 [![Build and Test](https://github.com/felipedferreira/Movies/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/felipedferreira/Movies/actions/workflows/build-and-test.yml)
 
-A clean architecture .NET solution for managing movies, crew members, and their roles — inspired by IMDB. Built with a focus on separation of concerns, testability, and maintainability.
+A clean architecture .NET solution for managing movies, their genres, crew members, and roles — inspired by IMDB. Built with a focus on separation of concerns, testability, and maintainability.
 
 All `dotnet` commands below are run from this folder (`backend/`). Docker Compose commands run from the repository root, where [compose.yaml](../compose.yaml) lives.
+
+## 🏷️ Genres
+
+Genres are their own entity (`Id`, `Name`, `Description`) stored in the `genres` table, and
+movies link to genres through a many-to-many relationship backed by a `movie_genres`
+junction table. A genre's navigation is one-directional — a movie knows its genres, but a
+genre does not hold a back-reference to movies.
+
+- **CRUD endpoints** under `/movies-svc/genres` (`GET`, `GET /{id}`, `POST`, `PUT /{id}`, `DELETE /{id}`).
+- **Movies reference genres by id** — `CreateMoviesRequest`/`UpdateMoviesRequest` carry a `GenreIds` collection, and movie responses include the linked genres.
+- **Seeded data** — the database ships with 17 common genres (Action, Comedy, Drama, …) so movies can be tagged immediately.
+
+See the [contracts README](src/Libraries/Movies.WebService.Contracts/README.md) for the request/response DTOs.
 
 ## 🗄️ Database
 
@@ -58,8 +71,7 @@ cp .env.example .env          # from the repository root
 | Variable | Purpose |
 |----------|---------|
 | `DB_CONNECTION_STRING` | Full Postgres connection string for the web service container (host is the `postgres` service name). |
-| `SEQ_ADMIN_PASSWORD` | Password for the Seq UI `admin` user (used to sign in and manage API keys). |
-| `SEQ_ADMIN_PASSWORD_HASH` | Permanent hash of `SEQ_ADMIN_PASSWORD`, seeded into Seq on first run (see [Observability](#-observability-seq)). |
+| `SEQ_ADMIN_PASSWORD` | First-login password for the Seq UI `admin` user. Seq prompts you to choose the permanent UI password on first login. |
 | `SEQ_API_KEY` | Ingestion API-key token the web service sends to Seq over OTLP (`X-Seq-ApiKey`). |
 
 For local development outside of Docker, the connection string is supplied via .NET User
@@ -131,7 +143,7 @@ and a [Seq](https://datalust.co/seq) instance for logs and traces.
 
 1. Create the root `.env` file (one-time — see [Environment Configuration](#environment-configuration)):
    ```bash
-   cp .env.example .env       # then fill in the Seq values
+   cp .env.example .env       # then fill in the database and Seq values
    ```
 2. Start the services from the repository root:
    ```bash
@@ -142,7 +154,7 @@ Access the application:
 - **API:** http://localhost:8080
 - **API Documentation:** http://127.0.0.1:8080/movies-svc/api-docs/v1 (Scalar UI)
 - **OpenAPI Spec:** http://127.0.0.1:8080/movies-svc/openapi/v1.json
-- **Seq (logs & traces):** http://localhost:5341 — sign in as `admin` with `SEQ_ADMIN_PASSWORD`
+- **Seq (logs & traces):** http://localhost:5341 — first login is `admin` with `SEQ_ADMIN_PASSWORD`; after the required password change, use the password you chose
 - **PostgreSQL:** localhost:5432
 
 ### Services
@@ -216,16 +228,10 @@ the same request.
 Seq refuses to start without an admin credential and won't auto-provision an ingestion key, so
 two `.env` values need preparing once.
 
-1. **Generate the admin password hash.** Seq's plaintext first-run password forces an
-   interactive change (which blocks automation), so seed a permanent hash instead. Pipe the
-   password to the image's default entrypoint with the `config hash` arguments (the `-i` flag
-   keeps stdin open so the password reaches the tool):
-   ```bash
-   echo "<your-password>" | docker run --rm -i datalust/seq config hash
-   ```
-   Put `<your-password>` in `SEQ_ADMIN_PASSWORD` and the printed hash in
-   `SEQ_ADMIN_PASSWORD_HASH`. The hash is salted, so each run prints a different string — any
-   hash generated from the same password will validate.
+1. **Choose the first-login admin password.** Put it in `SEQ_ADMIN_PASSWORD`. Compose passes it
+   to Seq as `SEQ_FIRSTRUN_ADMINPASSWORD`, which Seq only reads when the `seq_data` volume is
+   empty. On first login, Seq will require you to choose the permanent UI password. After that,
+   the saved password lives in the `seq_data` volume, and changing `.env` will not update it.
 
 2. **Choose an ingestion token** and set it as `SEQ_API_KEY` (any sufficiently random string).
 
@@ -255,6 +261,17 @@ two `.env` values need preparing once.
    > *Require authentication for HTTP/S ingestion*.
 
    Restart the web service afterwards so it picks up the key: `docker compose up -d movies.webservice`.
+
+If you already started Seq with the wrong first-run settings or forgot the saved UI password,
+reset only the Seq volume and start it again:
+
+```bash
+docker compose down
+docker volume rm movies_seq_data
+docker compose up -d seq
+```
+
+This deletes local Seq logs, API keys, and settings, but leaves the PostgreSQL volume alone.
 
 > **Note:** On Docker Desktop / Windows the Seq port is published on IPv4 loopback
 > (`127.0.0.1:5341`) on purpose — a dual-stack bind makes `localhost` resolve to IPv6 first,
@@ -309,7 +326,7 @@ backend/src/
 **Purpose:** Core business logic and domain entities  
 **Dependencies:** None  
 **Responsibilities:**
-- Domain entities — `Movie`, `CrewMember`, `Role`, etc.
+- Domain entities — `Movie`, `Genre`, `CrewMember`, `Role`, etc.
 - Business rules and invariants
 - No external dependencies (no EF, no web frameworks)
 
@@ -322,11 +339,18 @@ backend/src/
 - Orchestrates domain logic with persistence
 - Coordinates between domain and external systems
 
+**Handler conventions:**
+- Application handlers expose asynchronous use cases through `HandleAsync(...)`.
+- Create handlers assign the new domain id and return that `Guid` so presentation can build the `Location` header.
+- Update and delete handlers return `Task`; clients retrieve current resource state through the relevant query endpoint.
+- Query handlers return application DTOs for presentation mapping.
+- Repository create ports persist supplied domain models and return `Task` rather than echoing the saved entity.
+
 ### 3. **Movies.Persistence.Postgres** (Adapter Layer)
 **Purpose:** Implements data persistence using PostgreSQL  
 **Dependencies:** `Movies.Application`, `Movies.Domain`  
 **Responsibilities:**
-- `MoviesDbContext` — EF Core DbContext with Fluent API entity configurations
+- `FilmDbContext` — EF Core DbContext with Fluent API entity configurations
 - Concrete repository implementations
 - Database migrations and schema management
 - Adapts PostgreSQL to the repository ports defined in `Movies.Application`

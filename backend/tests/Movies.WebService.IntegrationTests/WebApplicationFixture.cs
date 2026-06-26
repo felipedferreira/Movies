@@ -10,7 +10,7 @@ namespace Movies.WebService.IntegrationTests;
 
 public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private readonly PostgreSqlContainer postgresContainer = new PostgreSqlBuilder()
+    private readonly PostgreSqlContainer _postgresContainer = new PostgreSqlBuilder()
         .WithImage("postgres:17-alpine")
         .Build();
 
@@ -18,12 +18,12 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
 
     public async Task InitializeAsync()
     {
-        await this.postgresContainer.StartAsync();
+        await _postgresContainer.StartAsync();
 
         this.Client = this.CreateClient();
 
         using var scope = this.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<MoviesDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<FilmDbContext>();
         await db.Database.MigrateAsync();
     }
 
@@ -31,7 +31,7 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
     {
         this.Client.Dispose();
         await base.DisposeAsync();
-        await this.postgresContainer.DisposeAsync();
+        await _postgresContainer.DisposeAsync();
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -40,7 +40,7 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ConnectionStrings:DefaultConnection"] = this.postgresContainer.GetConnectionString(),
+                ["ConnectionStrings:DefaultConnection"] = _postgresContainer.GetConnectionString(),
             });
         });
     }
