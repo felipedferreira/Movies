@@ -5,11 +5,11 @@ namespace Movies.WebService.UnitTests.TestDoubles;
 
 internal sealed class InMemoryGenreRepository : IGenreRepository
 {
-    private readonly List<Genre> genres = [];
+    private readonly List<Genre> _genres = [];
 
     public InMemoryGenreRepository(params Genre[] genres)
     {
-        this.genres.AddRange(genres);
+        _genres.AddRange(genres);
     }
 
     public int CreateCallCount { get; private set; }
@@ -29,16 +29,16 @@ internal sealed class InMemoryGenreRepository : IGenreRepository
     public IReadOnlyList<Guid> LastRequestedIds { get; private set; } = [];
 
     public Task<IReadOnlyList<Genre>> GetAllAsync(CancellationToken cancellationToken) =>
-        Task.FromResult<IReadOnlyList<Genre>>(genres.ToList());
+        Task.FromResult<IReadOnlyList<Genre>>(_genres.ToList());
 
     public Task<Genre?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
-        Task.FromResult(genres.FirstOrDefault(genre => genre.Id == id));
+        Task.FromResult(_genres.FirstOrDefault(genre => genre.Id == id));
 
     public Task<IReadOnlyList<Genre>> GetByIdsAsync(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
     {
         LastRequestedIds = ids.ToList();
 
-        IReadOnlyList<Genre> matchingGenres = genres
+        IReadOnlyList<Genre> matchingGenres = _genres
             .Where(genre => ids.Contains(genre.Id))
             .ToList();
 
@@ -49,7 +49,7 @@ internal sealed class InMemoryGenreRepository : IGenreRepository
     {
         CreateCallCount++;
         LastCreated = genre;
-        genres.Add(genre);
+        _genres.Add(genre);
 
         return Task.CompletedTask;
     }
@@ -64,8 +64,8 @@ internal sealed class InMemoryGenreRepository : IGenreRepository
             return Task.FromResult(false);
         }
 
-        genres.RemoveAll(existing => existing.Id == genre.Id);
-        genres.Add(genre);
+        _genres.RemoveAll(existing => existing.Id == genre.Id);
+        _genres.Add(genre);
 
         return Task.FromResult(true);
     }

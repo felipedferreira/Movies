@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -39,12 +38,38 @@ namespace Movies.Persistence.Postgres.Migrations
                     title = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     titleType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     yearOfRelease = table.Column<int>(type: "integer", nullable: false),
-                    description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
-                    genreIds = table.Column<List<Guid>>(type: "uuid[]", nullable: false)
+                    description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_titles", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "title_genres",
+                schema: "catalog",
+                columns: table => new
+                {
+                    titleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    genreId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_title_genres", x => new { x.titleId, x.genreId });
+                    table.ForeignKey(
+                        name: "fK_title_genres_genres_genreId",
+                        column: x => x.genreId,
+                        principalSchema: "catalog",
+                        principalTable: "genres",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "fK_title_genres_titles_titleId",
+                        column: x => x.titleId,
+                        principalSchema: "catalog",
+                        principalTable: "titles",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -78,11 +103,21 @@ namespace Movies.Persistence.Postgres.Migrations
                 table: "genres",
                 column: "name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_title_genres_genreId",
+                schema: "catalog",
+                table: "title_genres",
+                column: "genreId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "title_genres",
+                schema: "catalog");
+
             migrationBuilder.DropTable(
                 name: "genres",
                 schema: "catalog");

@@ -5,11 +5,11 @@ namespace Movies.WebService.UnitTests.TestDoubles;
 
 internal sealed class InMemoryTitleRepository : ITitleRepository
 {
-    private readonly List<Title> titles = [];
+    private readonly List<Title> _titles = [];
 
     public InMemoryTitleRepository(params Title[] titles)
     {
-        this.titles.AddRange(titles);
+        _titles.AddRange(titles);
     }
 
     public int CreateCallCount { get; private set; }
@@ -27,16 +27,16 @@ internal sealed class InMemoryTitleRepository : ITitleRepository
     public Title? LastUpdated { get; private set; }
 
     public Task<IReadOnlyList<Title>> GetAllAsync(CancellationToken cancellationToken) =>
-        Task.FromResult<IReadOnlyList<Title>>(titles.ToList());
+        Task.FromResult<IReadOnlyList<Title>>(_titles.ToList());
 
     public Task<Title?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
-        Task.FromResult(titles.FirstOrDefault(title => title.Id == id));
+        Task.FromResult(_titles.FirstOrDefault(title => title.Id == id));
 
     public Task CreateAsync(Title title, CancellationToken cancellationToken)
     {
         CreateCallCount++;
         LastCreated = title;
-        titles.Add(title);
+        _titles.Add(title);
 
         return Task.CompletedTask;
     }
@@ -51,8 +51,8 @@ internal sealed class InMemoryTitleRepository : ITitleRepository
             return Task.FromResult(false);
         }
 
-        titles.RemoveAll(existing => existing.Id == title.Id);
-        titles.Add(title);
+        _titles.RemoveAll(existing => existing.Id == title.Id);
+        _titles.Add(title);
 
         return Task.FromResult(true);
     }

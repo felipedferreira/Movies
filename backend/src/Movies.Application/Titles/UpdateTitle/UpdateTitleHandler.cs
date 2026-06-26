@@ -28,8 +28,8 @@ internal sealed class UpdateTitleHandler(
             Type = command.Type,
             YearOfRelease = command.YearOfRelease,
             Description = command.Description,
-            GenreIds = command.GenreIds.Distinct().ToList(),
         };
+        title.ReplaceGenres(command.GenreIds);
 
         var updated = await repository.UpdateAsync(title, cancellationToken);
 

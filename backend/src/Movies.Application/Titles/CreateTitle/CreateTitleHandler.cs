@@ -21,15 +21,12 @@ internal sealed class CreateTitleHandler(
         var genres = await genreRepository.GetByIdsAsync(genreIds, cancellationToken);
         GenreLinking.EnsureAllExist(genreIds, genres);
 
-        var title = new Title
-        {
-            Id = Guid.CreateVersion7(),
-            Name = command.Title,
-            Type = command.Type,
-            YearOfRelease = command.YearOfRelease,
-            Description = command.Description,
-            GenreIds = genreIds,
-        };
+        var title = Title.Create(
+            command.Title,
+            command.Type,
+            command.YearOfRelease,
+            command.Description,
+            genreIds);
 
         await repository.CreateAsync(title, cancellationToken);
 

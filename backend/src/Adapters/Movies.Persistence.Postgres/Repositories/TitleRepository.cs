@@ -1,20 +1,57 @@
 using Microsoft.EntityFrameworkCore;
 using Movies.Application.Abstractions;
 using Movies.Domain.TitleAggregate;
+using Movies.Persistence.Postgres.Entities;
 
 namespace Movies.Persistence.Postgres.Repositories;
 
 internal sealed class TitleRepository(FilmDbContext dbContext) : ITitleRepository
 {
-    public async Task<IReadOnlyList<Title>> GetAllAsync(CancellationToken cancellationToken) =>
-        await dbContext.Titles.AsNoTracking().ToListAsync(cancellationToken);
+    public async Task<IReadOnlyList<Title>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var titles = await dbContext.Titles
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
 
-    public async Task<Title?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
-        await dbContext.Titles.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
+        var titleIds = titles.Select(title => title.Id).ToList();
+        var genreLinks = await dbContext.TitleGenres
+            .AsNoTracking()
+            .Where(titleGenre => titleIds.Contains(titleGenre.TitleId))
+            .ToListAsync(cancellationToken);
+
+        return titles
+            .Select(title => HydrateGenreIds(
+                title,
+                genreLinks
+                    .Where(titleGenre => titleGenre.TitleId == title.Id)
+                    .Select(titleGenre => titleGenre.GenreId)))
+            .ToList();
+    }
+
+    public async Task<Title?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var title = await dbContext.Titles
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
+
+        if (title is null)
+        {
+            return null;
+        }
+
+        var genreIds = await dbContext.TitleGenres
+            .AsNoTracking()
+            .Where(titleGenre => titleGenre.TitleId == title.Id)
+            .Select(titleGenre => titleGenre.GenreId)
+            .ToListAsync(cancellationToken);
+
+        return HydrateGenreIds(title, genreIds);
+    }
 
     public async Task CreateAsync(Title title, CancellationToken cancellationToken)
     {
         dbContext.Titles.Add(title);
+        dbContext.TitleGenres.AddRange(ToTitleGenres(title));
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
@@ -28,13 +65,21 @@ internal sealed class TitleRepository(FilmDbContext dbContext) : ITitleRepositor
             return false;
         }
 
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+
         existing.Name = title.Name;
         existing.Type = title.Type;
         existing.YearOfRelease = title.YearOfRelease;
         existing.Description = title.Description;
-        existing.GenreIds = title.GenreIds;
+
+        await dbContext.TitleGenres
+            .Where(titleGenre => titleGenre.TitleId == title.Id)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        dbContext.TitleGenres.AddRange(ToTitleGenres(title));
 
         await dbContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
         return true;
     }
@@ -46,5 +91,20 @@ internal sealed class TitleRepository(FilmDbContext dbContext) : ITitleRepositor
             .ExecuteDeleteAsync(cancellationToken);
 
         return rowsAffected > 0;
+    }
+
+    private static Title HydrateGenreIds(Title title, IEnumerable<Guid> genreIds)
+    {
+        title.ReplaceGenres(genreIds);
+        return title;
+    }
+
+    private static IEnumerable<TitleGenre> ToTitleGenres(Title title)
+    {
+        return title.GenreIds.Select(genreId => new TitleGenre
+        {
+            TitleId = title.Id,
+            GenreId = genreId,
+        });
     }
 }

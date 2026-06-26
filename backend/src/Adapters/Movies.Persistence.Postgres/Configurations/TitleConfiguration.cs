@@ -32,9 +32,6 @@ internal sealed class TitleConfiguration : IEntityTypeConfiguration<Title>
         builder.Property(m => m.Description)
             .HasMaxLength(2000);
 
-        // Genre is a separate aggregate, referenced by identity only. The ids are stored as a
-        // Postgres uuid[] column on the titles table; no join table, no cross-aggregate FK.
-        builder.Property(m => m.GenreIds)
-            .HasColumnType("uuid[]");
+        builder.Ignore(m => m.GenreIds);
     }
 }
