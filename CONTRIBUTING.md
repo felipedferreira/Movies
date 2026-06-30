@@ -1,6 +1,6 @@
-# Contributing to Movies
+# Contributing to Cinedex
 
-Thank you for your interest in contributing! This document provides guidelines and instructions for contributing to the Movies project.
+Thank you for your interest in contributing! This document provides guidelines and instructions for contributing to the Cinedex project.
 
 ## Code of Conduct
 
@@ -39,8 +39,8 @@ docker compose up --build
 
 1. Clone the repository and move into the backend folder:
    ```bash
-   git clone https://github.com/felipedferreira/Movies.git
-   cd Movies/backend
+   git clone https://github.com/felipedferreira/Cinedex.git
+   cd Cinedex/backend
    ```
 
 2. Restore dependencies:

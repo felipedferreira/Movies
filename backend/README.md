@@ -1,21 +1,21 @@
-# Movies Backend
+# Cinedex Backend
 
-[![Build and Test](https://github.com/felipedferreira/Movies/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/felipedferreira/Movies/actions/workflows/build-and-test.yml)
+[![Build and Test](https://github.com/felipedferreira/Cinedex/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/felipedferreira/Cinedex/actions/workflows/build-and-test.yml)
 
-A clean architecture .NET solution for managing movies, their genres, crew members, and roles — inspired by IMDB. Built with a focus on separation of concerns, testability, and maintainability.
+A clean architecture .NET solution for managing titles, their genres, crew members, and roles — inspired by IMDB. Built with a focus on separation of concerns, testability, and maintainability.
 
 All `dotnet` commands below are run from this folder (`backend/`). Docker Compose commands run from the repository root, where [compose.yaml](../compose.yaml) lives.
 
 ## 🏷️ Genres
 
 Genres are their own entity (`Id`, `Name`, `Description`) stored in the `genres` table, and
-movies link to genres through a many-to-many relationship backed by a `movie_genres`
-junction table. A genre's navigation is one-directional — a movie knows its genres, but a
-genre does not hold a back-reference to movies.
+titles link to genres through a many-to-many relationship backed by a `title_genres`
+junction table. A genre's navigation is one-directional — a title knows its genres, but a
+genre does not hold a back-reference to titles.
 
-- **CRUD endpoints** under `/movies-svc/genres` (`GET`, `GET /{id}`, `POST`, `PUT /{id}`, `DELETE /{id}`).
-- **Movies reference genres by id** — `CreateMoviesRequest`/`UpdateMoviesRequest` carry a `GenreIds` collection, and movie responses include the linked genres.
-- **Seeded data** — the database ships with 17 common genres (Action, Comedy, Drama, …) so movies can be tagged immediately.
+- **CRUD endpoints** under `/cinedex-svc/genres` (`GET`, `GET /{id}`, `POST`, `PUT /{id}`, `DELETE /{id}`).
+- **Titles reference genres by id** — `CreateTitlesRequest`/`UpdateTitlesRequest` carry a `GenreIds` collection, and title responses include the linked genres.
+- **Seeded data** — the database ships with 17 common genres (Action, Comedy, Drama, …) so titles can be tagged immediately.
 
 See the [contracts README](NuGetLibraries/Cinedex.WebService.Contracts/README.md) for the request/response DTOs.
 
@@ -34,7 +34,7 @@ docker compose up            # from the repository root, where compose.yaml live
 
 This starts:
 - **PostgreSQL 17 Alpine** on port `5432`
-- **Movies WebService** on ports `8080` (HTTP) and `8081` (HTTPS)
+- **Cinedex WebService** on ports `8080` (HTTP) and `8081` (HTTPS)
 - Automatic database initialization
 - Data persistence via Docker volume
 
@@ -104,7 +104,7 @@ dotnet ef database update \
   --project src/Adapters/Cinedex.Persistence.Postgres \
   --startup-project src/Presentation/Cinedex.WebService \
   --connection "<YOUR_CONNECTION_STRING>"
-# e.g. "Host=127.0.0.1;Port=5432;Database=movies;Username=movies_rw;Password=<DB_PASSWORD>"
+# e.g. "Host=127.0.0.1;Port=5432;Database=cinedex;Username=cinedex_rw;Password=<DB_PASSWORD>"
 ```
 
 > **Domain models** live in `Cinedex.Domain`. EF entity configurations use **Fluent API** in `Cinedex.Persistence.Postgres`, keeping the domain layer free of any EF dependencies.
@@ -152,8 +152,8 @@ and a [Seq](https://datalust.co/seq) instance for logs and traces.
 
 Access the application:
 - **API:** http://localhost:8080
-- **API Documentation:** http://127.0.0.1:8080/movies-svc/api-docs/v1 (Scalar UI)
-- **OpenAPI Spec:** http://127.0.0.1:8080/movies-svc/openapi/v1.json
+- **API Documentation:** http://127.0.0.1:8080/cinedex-svc/api-docs/v1 (Scalar UI)
+- **OpenAPI Spec:** http://127.0.0.1:8080/cinedex-svc/openapi/v1.json
 - **Seq (logs & traces):** http://localhost:5341 — first login is `admin` with `SEQ_ADMIN_PASSWORD`; after the required password change, use the password you chose
 - **PostgreSQL:** localhost:5432
 
@@ -162,7 +162,7 @@ Access the application:
 | Service | Image | Port | Purpose |
 |---------|-------|------|---------|
 | `postgres` | postgres:17-alpine | 5432 | PostgreSQL database with persistent storage |
-| `movies.webservice` | movies.webservice | 8080/8081 | ASP.NET Core web API |
+| `cinedex.webservice` | cinedex.webservice | 8080/8081 | ASP.NET Core web API |
 | `cinadex-ui` | cinadex-ui | 9000 | React SPA frontend (Nginx) |
 | `seq` | datalust/seq | 5341 | Structured logs + distributed traces (OpenTelemetry/OTLP) |
 
@@ -172,7 +172,7 @@ Access the application:
 - ✅ **Data Persistence:** PostgreSQL and Seq data persist via named volumes (`postgres_data`, `seq_data`)
 - ✅ **Observability:** Logs and traces shipped to Seq via OpenTelemetry (see [below](#-observability-seq))
 - ✅ **Service Dependencies:** Web service automatically waits for its dependencies
-- ✅ **API Documentation:** Scalar UI available at `/movies-svc/api-docs/v1`
+- ✅ **API Documentation:** Scalar UI available at `/cinedex-svc/api-docs/v1`
 - ✅ **Feature Flags:** Configurable via environment variables
 
 ### Stopping Services
@@ -189,22 +189,22 @@ docker compose down -v
 ## 🩺 Health Checks
 
 The web service exposes two health endpoints, following the standard liveness/readiness split.
-Both live under the `/movies-svc` base path and return a minimal JSON body (`{ "status": ..., "checks": [...] }`)
+Both live under the `/cinedex-svc` base path and return a minimal JSON body (`{ "status": ..., "checks": [...] }`)
 along with an HTTP status code (`200` healthy, `503` unhealthy). The payload intentionally omits
 exception detail so the endpoints don't leak internal information.
 
 | Endpoint | Purpose | Dependencies checked |
 |----------|---------|----------------------|
-| `GET /movies-svc/health/live` | **Liveness** — confirms the process is up and serving requests. | None |
-| `GET /movies-svc/health/ready` | **Readiness** — confirms the service can handle traffic. | PostgreSQL (checks tagged `ready`) |
+| `GET /cinedex-svc/health/live` | **Liveness** — confirms the process is up and serving requests. | None |
+| `GET /cinedex-svc/health/ready` | **Readiness** — confirms the service can handle traffic. | PostgreSQL (checks tagged `ready`) |
 
 ```bash
 # Liveness
-curl -s http://localhost:8080/movies-svc/health/live
+curl -s http://localhost:8080/cinedex-svc/health/live
 # {"status":"Healthy","checks":[]}
 
 # Readiness (includes the Postgres connectivity check)
-curl -s http://localhost:8080/movies-svc/health/ready
+curl -s http://localhost:8080/cinedex-svc/health/ready
 # {"status":"Healthy","checks":[{"name":"postgres","status":"Healthy"}]}
 ```
 
@@ -216,7 +216,7 @@ the web service to report healthy before starting.
 The web service emits **structured logs** and **distributed traces** through OpenTelemetry,
 exporting both over OTLP to the `seq` container. Inside the Compose network the app targets
 `http://seq/ingest/otlp` (configured via the `OTEL_EXPORTER_OTLP_*` environment variables on
-`movies.webservice`); from your machine the Seq UI is at **http://localhost:5341**.
+`cinedex.webservice`); from your machine the Seq UI is at **http://localhost:5341**.
 
 Traces cover incoming HTTP requests (ASP.NET Core), outbound `HttpClient` calls, and PostgreSQL
 queries (the `Npgsql` activity source). Every request's `CorrelationId` is attached to its log
@@ -242,14 +242,14 @@ two `.env` values need preparing once.
 
    **Option A — CLI (`seqcli`):**
    ```bash
-   docker run --rm --network movies_default datalust/seqcli apikey create \
-     -t "Movies WebService" --token "<your-SEQ_API_KEY>" --permissions "Ingest" \
+   docker run --rm --network cinedex_default datalust/seqcli apikey create \
+     -t "Cinedex WebService" --token "<your-SEQ_API_KEY>" --permissions "Ingest" \
      -s http://seq --connect-username admin --connect-password "<your-password>"
    ```
 
    **Option B — Seq UI** (http://localhost:5341 → **Settings → API Keys**):
    1. Click **ADD API KEY**.
-   2. **Title:** anything descriptive, e.g. `Movies WebService`.
+   2. **Title:** anything descriptive, e.g. `Cinedex WebService`.
    3. **Token:** type your `SEQ_API_KEY` value here instead of generating a random one, so it
       matches `.env`.
    4. **Permissions:** ensure **Ingest** is selected (all the web service needs to write events).
@@ -260,14 +260,14 @@ two `.env` values need preparing once.
    > ingestion is attributed to it and keeps working if you later enable
    > *Require authentication for HTTP/S ingestion*.
 
-   Restart the web service afterwards so it picks up the key: `docker compose up -d movies.webservice`.
+   Restart the web service afterwards so it picks up the key: `docker compose up -d cinedex.webservice`.
 
 If you already started Seq with the wrong first-run settings or forgot the saved UI password,
 reset only the Seq volume and start it again:
 
 ```bash
 docker compose down
-docker volume rm movies_seq_data
+docker volume rm cinedex_seq_data
 docker compose up -d seq
 ```
 

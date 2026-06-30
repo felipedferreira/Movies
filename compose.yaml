@@ -1,11 +1,11 @@
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: movies-db
+    container_name: cinedex-db
     environment:
-      POSTGRES_USER: movies_rw
+      POSTGRES_USER: cinedex_rw
       POSTGRES_PASSWORD: P@ssw0rd!Secure#2024
-      POSTGRES_DB: movies
+      POSTGRES_DB: cinedex
     ports:
       - "5432:5432"
     volumes:
@@ -20,11 +20,11 @@ services:
   # First-run setup: sign in to the UI at http://localhost:5341 as `admin` with the
   # SEQ_ADMIN_PASSWORD from your .env. Seq will require you to choose a permanent
   # password on first login. Create an API key under Settings -> API Keys, set its
-  # token to the SEQ_API_KEY value, then restart movies.webservice.
+  # token to the SEQ_API_KEY value, then restart cinedex.webservice.
   # CI alternative: `seqcli apikey create --token=$SEQ_API_KEY`.
   seq:
     image: datalust/seq:latest
-    container_name: movies-seq
+    container_name: cinedex-seq
     environment:
       ACCEPT_EULA: "Y"
       # Used only when the seq_data volume is empty. After first login, Seq stores
@@ -43,12 +43,12 @@ services:
       timeout: 5s
       retries: 5
 
-  movies.webservice:
-    image: movies.webservice
+  cinedex.webservice:
+    image: cinedex.webservice
     build:
       context: ./backend
       dockerfile: src/Presentation/Cinedex.WebService/Dockerfile
-    container_name: movies-web
+    container_name: cinedex-web
     ports:
       - "8080:8080"
       - "8081:8081"
@@ -68,7 +68,7 @@ services:
       OTEL_EXPORTER_OTLP_HEADERS: "X-Seq-ApiKey=${SEQ_API_KEY}"
       OTEL_SERVICE_NAME: "Cinedex.WebService"
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:8080/movies-svc/health/live || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/cinedex-svc/health/live || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -82,7 +82,7 @@ services:
     ports:
       - "127.0.0.1:9000:80"
     depends_on:
-      movies.webservice:
+      cinedex.webservice:
         condition: service_healthy
 
 volumes:

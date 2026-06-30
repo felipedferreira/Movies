@@ -1,13 +1,13 @@
-# Movies Project
+# Cinedex Project
 
-[![Build and Test](https://github.com/felipedferreira/Movies/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/felipedferreira/Movies/actions/workflows/build-and-test.yml)
+[![Build and Test](https://github.com/felipedferreira/Cinedex/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/felipedferreira/Cinedex/actions/workflows/build-and-test.yml)
 
-A full-stack portfolio application for managing movies, crew members, and their roles — inspired by IMDB.
+A full-stack portfolio application for managing titles, crew members, and their roles — inspired by IMDB.
 
 ## 📁 Repository Layout
 
 ```
-Movies/
+Cinedex/
 ├── backend/      # .NET solution (Web API, application core, persistence, tests)
 ├── frontend/     # Standalone SPA consuming the backend's OpenAPI spec
 └── compose.yaml  # Orchestrates PostgreSQL, the web service, the frontend, and Seq
@@ -31,8 +31,8 @@ docker compose up --build
 Access the application:
 - **UI:** http://localhost:9000
 - **API:** http://localhost:8080
-- **API Documentation:** http://127.0.0.1:8080/movies-svc/api-docs/v1 (Scalar UI)
-- **OpenAPI Spec:** http://127.0.0.1:8080/movies-svc/openapi/v1.json
+- **API Documentation:** http://127.0.0.1:8080/cinedex-svc/api-docs/v1 (Scalar UI)
+- **OpenAPI Spec:** http://127.0.0.1:8080/cinedex-svc/openapi/v1.json
 - **Seq (logs & traces):** http://localhost:5341
 - **PostgreSQL:** localhost:5432
 

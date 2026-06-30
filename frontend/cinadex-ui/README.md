@@ -1,6 +1,6 @@
 # cinadex-ui
 
-The standalone SPA for the Movies project. It consumes the backend's OpenAPI spec (`http://localhost:8080/openapi/v1.json`).
+The standalone SPA for the Cinedex project. It consumes the backend's OpenAPI spec (`http://localhost:8080/openapi/v1.json`).
 
 ## 📁 Layout
 

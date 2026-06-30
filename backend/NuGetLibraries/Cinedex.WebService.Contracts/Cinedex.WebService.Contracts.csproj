@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <!-- Mark as packable (triggers conditional properties in Directory.Build.props) -->
     <IsPackable>true</IsPackable>
@@ -8,9 +8,9 @@
     <Title>Cinedex Web Service Contracts</Title>
     <Authors>Felipe Ferreira</Authors>
     <Description>DTOs and contract classes for the Cinedex Web Service API</Description>
-    <ProjectUrl>https://github.com/felipedferreira/Movies</ProjectUrl>
-    <RepositoryUrl>https://github.com/felipedferreira/Movies</RepositoryUrl>
-    <PackageTags>movies;api;contracts;dto</PackageTags>
+    <ProjectUrl>https://github.com/felipedferreira/Cinedex</ProjectUrl>
+    <RepositoryUrl>https://github.com/felipedferreira/Cinedex</RepositoryUrl>
+    <PackageTags>cinedex;api;contracts;dto</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 

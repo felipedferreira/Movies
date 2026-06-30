@@ -2,7 +2,7 @@ namespace Cinedex.WebService.Constants;
 
 internal static class ApiConstants
 {
-    public const string BasePath = "/movies-svc";
+    public const string BasePath = "/cinedex-svc";
 
     public static class RouteParameters
     {
